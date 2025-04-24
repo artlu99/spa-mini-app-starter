@@ -52,7 +52,7 @@ export const useSignIn = () => {
 				json: {
 					signature: result.signature,
 					message: result.message,
-					fid: contextFid ?? 0,
+					fid: contextFid ?? 0, // this can only be null if LOCAL_DEBUGGING is true
 					referrerFid,
 				},
 			});
@@ -62,6 +62,10 @@ export const useSignIn = () => {
 			}
 
 			const data = await res.json();
+
+			if (!LOCAL_DEBUGGING && data.secureFid !== contextFid) {
+				throw new Error("Unable to proceed due to client-side spoofing");
+			}
 
 			setJwt(data.token);
 			setSecureContextFid(data.secureFid);
