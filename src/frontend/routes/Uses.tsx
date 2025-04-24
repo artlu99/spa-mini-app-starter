@@ -57,9 +57,9 @@ const Uses = () => {
 							aria-label="get secret"
 						>
 							{protectedQuery.isError
-								? "Not signed in!"
+								? "not signed in!"
 								: protectedQuery.data
-									? `FID ${protectedQuery.data.fid} authenticated: ${protectedQuery.data.secret}`
+									? `FID ${protectedQuery.data.fid}: ${protectedQuery.data.secret}`
 									: "Loading..."}
 							<span className={protectedQuery.isLoading ? "animate-spin" : ""}>
 								<i className="ri-refresh-line" />

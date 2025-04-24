@@ -78,11 +78,14 @@ const Landing = () => {
 								<pre>{JSON.stringify(error, null, 2)}</pre>
 							</div>
 						) : null}
+						<br />
+						with seamless signin
 					</div>
 				) : null}
 
 				<div className="p-4">
-					✓ state can be shared across routes
+					✓ share state across routes
+					<br /> don't persist or reveal to server
 					<br />
 					<button
 						className="btn btn-primary btn-soft"
@@ -99,7 +102,7 @@ const Landing = () => {
 				</div>
 
 				<div className="p-4">
-					✓ API calls can be made without authentication
+					✓ expose backend information
 					<br />
 					<button
 						className="btn btn-info btn-soft btn-wide"
@@ -118,7 +121,7 @@ const Landing = () => {
 				</div>
 
 				<div className="p-4">
-					✓ some API calls require authentication
+					✓ require authentication
 					<br />
 					<button
 						className="btn btn-warning btn-soft btn-wide"
@@ -127,9 +130,9 @@ const Landing = () => {
 						aria-label="get secret"
 					>
 						{protectedQuery.isError
-							? "Not signed in!"
+							? "not signed in!"
 							: protectedQuery.data
-								? `FID ${protectedQuery.data.fid} authenticated: ${protectedQuery.data.secret}`
+								? `FID ${protectedQuery.data.fid}: ${protectedQuery.data.secret}`
 								: "Loading..."}
 						<span className={protectedQuery.isLoading ? "animate-spin" : ""}>
 							<i className="ri-refresh-line" />
@@ -139,7 +142,7 @@ const Landing = () => {
 						Edit <code>.dev.vars</code> to change the secret
 						<br />
 						<br />
-						go to <Link href="/uses">/uses</Link> to re-try after logging out,
+						go to <Link href="/uses">/uses</Link> to retry after logging out,
 						<br />
 						or use browser to{" "}
 						<code>
@@ -156,7 +159,6 @@ const Landing = () => {
 								view this page
 							</span>
 						</code>
-						.
 					</p>
 				</div>
 
