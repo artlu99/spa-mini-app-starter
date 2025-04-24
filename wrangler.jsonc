@@ -1,0 +1,20 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "spa-mini-app-starter",
+	"main": "./src/backend/index.ts",
+	"compatibility_date": "2025-04-05",
+	"compatibility_flags": ["nodejs_compat"],
+	"vars": {
+		"NAME": "SPA Mini App Starter",
+		"JWT_ALGORITHM": "HS256",
+		"MOMENTO_CACHE_NAME": "neynar"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"assets": {
+		"not_found_handling": "single-page-application",
+		"directory": "public"
+	}
+}
