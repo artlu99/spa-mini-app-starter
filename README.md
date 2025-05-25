@@ -33,20 +33,20 @@ Get started in minutes with local development or deploy directly via the Cloudfl
 Install dependencies:
 
 ```bash
-pnpm install
+bun install
 ```
 
 Update variables in `wrangler.jsonc` and `.dev.vars`:
 
 ```bash
 vi wrangler.jsonc
-pnpm run types
+bun run types
 ```
 
 Start the development server with:
 
 ```bash
-pnpm dev
+bun dev
 ```
 
 Your application will be available at [http://localhost:5173](http://localhost:5173).
@@ -72,7 +72,7 @@ The developer experience for Mini Apps continues to evolve. Watch `/fc-devs` and
 Build your project for production:
 
 ```bash
-pnpm build
+bun run build
 ```
 
 Deploy your project to Cloudflare Workers:

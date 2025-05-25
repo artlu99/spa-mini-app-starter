@@ -37,7 +37,7 @@
 	},
 	"scripts": {
 		"build": "wrangler build && vite build",
-		"deploy": "pnpm run build && wrangler deploy",
+		"deploy": "bun run build && wrangler deploy",
 		"dev": "vite",
 		"types": "wrangler types"
 	},
