@@ -6,7 +6,6 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"vars": {
 		"NAME": "SPA Mini App Starter",
-		"JWT_ALGORITHM": "HS256",
 		"MOMENTO_CACHE_NAME": "neynar"
 	},
 	"kv_namespaces": [

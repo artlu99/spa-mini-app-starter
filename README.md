@@ -84,7 +84,6 @@ npx wrangler deploy
 Update secrets in prod:
 
 ```bash
-wrangler secret put JWT_SECRET
 wrangler secret put MOMENTO_API_KEY
 wrangler secret put MOMENTO_HTTP_ENDPOINT
 wrangler secret put NEYNAR_API_KEY
