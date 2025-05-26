@@ -11,7 +11,7 @@ const Uses = () => {
 	const [isMatch] = useRoute("/uses");
 	const { count, increase, reset } = useZustand();
 	const { contextFid, openUrl } = useFrameSDK();
-	const { jwt } = useInMemoryZustand();
+	const { jwt, secureContextFid } = useInMemoryZustand();
 	const { error, signOut } = useSignIn();
 	const { name } = useThemes();
 
@@ -59,7 +59,7 @@ const Uses = () => {
 							{protectedQuery.isError
 								? "not signed in!"
 								: protectedQuery.data
-									? `FID ${protectedQuery.data.fid}: ${protectedQuery.data.secret}`
+									? `FID ${secureContextFid}: ${protectedQuery.data.secret}`
 									: "Loading..."}
 							<span className={protectedQuery.isLoading ? "animate-spin" : ""}>
 								<i className="ri-refresh-line" />

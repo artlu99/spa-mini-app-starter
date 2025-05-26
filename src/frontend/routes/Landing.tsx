@@ -1,17 +1,15 @@
 import { useEffect } from "preact/hooks";
 import { Link } from "wouter";
-import { api, useNameQuery, useTimeQuery } from "../hooks/queries/useOpenQuery";
+import { useNameQuery, useTimeQuery } from "../hooks/queries/useOpenQuery";
 import { useProtectedQuery } from "../hooks/queries/useProtectedQuery";
 import { useFrameSDK } from "../hooks/use-frame-sdk";
 import { useSignIn } from "../hooks/use-sign-in";
 import { useThemes } from "../hooks/use-themes";
 import { useInMemoryZustand, useZustand } from "../hooks/use-zustand";
 
-const LOCAL_DEBUGGING = import.meta.env.DEV;
-
 const Landing = () => {
 	const { count, increase } = useZustand();
-	const { jwt, secureContextFid, setJwt } = useInMemoryZustand();
+	const { jwt, secureContextFid } = useInMemoryZustand();
 	const { contextName, contextFid, openUrl, viewProfile } = useFrameSDK();
 	const { error, signIn, signOut } = useSignIn();
 	const { name } = useThemes();
@@ -22,19 +20,10 @@ const Landing = () => {
 
 	useEffect(() => {
 		const doSignIn = async () => {
-			if (LOCAL_DEBUGGING) {
-				const res = await api["local-sign-in"].$post({
-					json: { fid: 6546 },
-				});
-				if (res.status === 200) {
-					setJwt((await res.json()).token);
-				}
-			} else {
-				await signIn();
-			}
+			await signIn();
 		};
 		!jwt && contextFid && doSignIn();
-	}, [contextFid, jwt, signIn, setJwt]);
+	}, [contextFid, jwt, signIn]);
 
 	return (
 		<div className="flex flex-col text-center gap-4" data-theme={name}>
@@ -132,7 +121,7 @@ const Landing = () => {
 						{protectedQuery.isError
 							? "not signed in!"
 							: protectedQuery.data
-								? `FID ${protectedQuery.data.fid}: ${protectedQuery.data.secret}`
+								? `FID ${secureContextFid}: ${protectedQuery.data.secret}`
 								: "Loading..."}
 						<span className={protectedQuery.isLoading ? "animate-spin" : ""}>
 							<i className="ri-refresh-line" />

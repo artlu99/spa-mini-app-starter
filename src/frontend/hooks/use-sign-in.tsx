@@ -4,15 +4,15 @@ import { useCallback, useState } from "react";
 import type { AppType } from "../../backend";
 import { useFrameSDK } from "./use-frame-sdk";
 import { useInMemoryZustand } from "./use-zustand";
+import { jwtVerify } from "jose";
+import { jwks } from "../routes/constants";
 
 export const api = hc<AppType>("/").api;
-
-const MESSAGE_EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes
 
 const LOCAL_DEBUGGING = import.meta.env.DEV;
 
 export const useSignIn = () => {
-	const { context, contextFid } = useFrameSDK();
+	const { contextFid } = useFrameSDK();
 	const { setJwt, setSecureContextFid } = useInMemoryZustand();
 	const [error, setError] = useState<string | null>(null);
 
@@ -22,9 +22,6 @@ export const useSignIn = () => {
 	}, [setJwt, setSecureContextFid]);
 
 	const signIn = useCallback(async () => {
-		if (!contextFid) {
-			return;
-		}
 		try {
 			setError(null);
 
@@ -36,44 +33,16 @@ export const useSignIn = () => {
 				}
 			}
 
-			const result = !LOCAL_DEBUGGING
-				? await sdk.actions.signIn({
-						nonce: Math.random().toString(36).substring(2),
-						notBefore: new Date().toISOString(),
-						expirationTime: new Date(
-							Date.now() + MESSAGE_EXPIRATION_TIME,
-						).toISOString(),
-						acceptAuthAddress: true
-					})
-				: { signature: "0x123", message: "0x123" };
+			const { token } = !LOCAL_DEBUGGING
+				? await sdk.experimental.quickAuth()
+				: { token: "0x123" };
 
-			const referrerFid =
-				context?.location?.type === "cast_embed"
-					? context?.location.cast.fid
-					: null;
-
-			const res = await api["sign-in"].$post({
-				json: {
-					signature: result.signature,
-					message: result.message,
-					fid: contextFid,
-					referrerFid,
-				},
-			});
-
-			if (res.status !== 200) {
-				throw new Error("Sign in failed (not successful)");
+			setJwt(token ?? null);
+			// verify the jwt on client side
+			if (token) {
+				const { payload } = await jwtVerify(token, jwks.keys[0]);
+				setSecureContextFid(payload?.sub ? Number(payload.sub) : null);
 			}
-
-			const data = await res.json();
-
-			if (!LOCAL_DEBUGGING && data.secureFid !== contextFid) {
-				throw new Error("Unable to proceed due to client-side spoofing");
-			}
-
-			setJwt(data.token);
-			setSecureContextFid(data.secureFid);
-			return data;
 		} catch (err) {
 			const errorMessage =
 				err instanceof Error
@@ -83,7 +52,7 @@ export const useSignIn = () => {
 			setJwt(null);
 			throw err;
 		}
-	}, [context, contextFid, setJwt, setSecureContextFid]);
+	}, [contextFid, setJwt, setSecureContextFid]);
 
 	return {
 		signIn,
