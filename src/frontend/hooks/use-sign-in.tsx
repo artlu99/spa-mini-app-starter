@@ -22,6 +22,9 @@ export const useSignIn = () => {
 	}, [setJwt, setSecureContextFid]);
 
 	const signIn = useCallback(async () => {
+		if (!contextFid) {
+			return;
+		}
 		try {
 			setError(null);
 
@@ -40,6 +43,7 @@ export const useSignIn = () => {
 						expirationTime: new Date(
 							Date.now() + MESSAGE_EXPIRATION_TIME,
 						).toISOString(),
+						acceptAuthAddress: true
 					})
 				: { signature: "0x123", message: "0x123" };
 
@@ -52,7 +56,7 @@ export const useSignIn = () => {
 				json: {
 					signature: result.signature,
 					message: result.message,
-					fid: contextFid ?? 0, // this can only be null if LOCAL_DEBUGGING is true
+					fid: contextFid,
 					referrerFid,
 				},
 			});

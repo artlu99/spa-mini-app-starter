@@ -33,8 +33,8 @@ const Landing = () => {
 				await signIn();
 			}
 		};
-		!jwt && doSignIn();
-	}, [jwt, signIn, setJwt]);
+		!jwt && contextFid && doSignIn();
+	}, [contextFid, jwt, signIn, setJwt]);
 
 	return (
 		<div className="flex flex-col text-center gap-4" data-theme={name}>

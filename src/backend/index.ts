@@ -5,7 +5,7 @@ import { csrf } from "hono/csrf";
 import { sign } from "hono/jwt";
 import { secureHeaders } from "hono/secure-headers";
 import invariant from "tiny-invariant";
-import { verifyMessage } from "viem";
+import { getAddress, verifyMessage } from "viem";
 import { z } from "zod";
 import { getNeynarUser } from "./lib/neynar";
 import { protectedRoutes } from "./protected";
@@ -72,16 +72,34 @@ const routes = app
 			if (!user) {
 				return c.json({ error: `User not found: ${fid}` }, 404);
 			}
-			const address =
-				`0x${user.custody_address.replace("0x", "")}` as `0x${string}`;
-			const isVerified = await verifyMessage({
-				address,
-				message,
-				signature,
-			});
+			const custodyAddress = getAddress(user.custody_address);
+			const verifiedAddresses =
+				user.verified_addresses.eth_addresses.map(getAddress);
+			const allAddresses = [custodyAddress, ...verifiedAddresses.reverse()];
+
+			// Create verification promises
+			const verificationPromises = allAddresses.map((address) =>
+				verifyMessage({ address, message, signature }),
+			);
+
+			// single shared promise for all-complete case
+			const allCompletePromise = Promise.all(verificationPromises).then(
+				(results) => results.some((r) => r === true),
+			);
+
+			// false results wait for all others
+			const racingPromises = verificationPromises.map((promise) =>
+				promise.then((result) => {
+					if (result === true) return true;
+					return allCompletePromise;
+				}),
+			);
+
+			const isVerified = await Promise.race(racingPromises);
 			if (!isVerified) {
 				return c.json({ error: "Invalid signature" }, 401);
 			}
+
 			const token = await sign(
 				{
 					sub: "farcaster_user",
