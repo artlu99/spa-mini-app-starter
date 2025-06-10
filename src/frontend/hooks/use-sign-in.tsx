@@ -34,7 +34,7 @@ export const useSignIn = () => {
 			}
 
 			const { token } = !LOCAL_DEBUGGING
-				? await sdk.experimental.quickAuth()
+				? await sdk.quickAuth.getToken()
 				: { token: "0x123" };
 
 			setJwt(token ?? null);
